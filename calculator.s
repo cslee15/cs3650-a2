@@ -26,14 +26,8 @@ main:
   xorb %al, %al
   call scanf
 
-  movb op, %al # TODO: load the operation for comparisons
-  movq a, %r8  # TODO: and the LHS
-
-  # TODO: Analyze operation and execute
-
-  # TODO: Print result
-
-  # TODO: Print error if operation cannot be (safely) performed
+  movb op, %al
+  movq a, %r8
 
   cmpb $'+', %al
   je do_addition
@@ -45,6 +39,7 @@ main:
   je do_division
   jmp unknown_op
 
+  # Add b to value of a stored in %r8 and print output
   do_addition:
     addq b, %r8
     movq $output_fmt, %rdi
@@ -53,6 +48,7 @@ main:
     call printf
     jmp end_program
 
+  # Subtract b from the value of a stored in %r8 and print output
   do_subtraction:
     subq b, %r8
     movq $output_fmt, %rdi
@@ -61,6 +57,7 @@ main:
     call printf
     jmp end_program
 
+  # Multiply b times value of a stored in %r8 and print output
   do_multiplication:
     imulq b, %r8
     movq $output_fmt, %rdi
@@ -69,6 +66,7 @@ main:
     call printf
     jmp end_program
 
+  # Check for division by zero. Divide value of a in %rax by b and print output
   do_division:
     cmpq $0, b
     je div_by_zero
@@ -81,25 +79,30 @@ main:
     call printf
     jmp end_program
 
+  # Return error message and end program in error
   div_by_zero:
     movq $div_by_zero_msg, %rdi
     xorb %al, %al
     call printf
     jmp error_exit
 
+  # Return error message and end program in error
   unknown_op:
     movq $unknown_op_msg, %rdi
     xorb %al, %al
     call printf
     jmp error_exit
 
+  # End program with an error
   error_exit:
     movq $1, %rax
     jmp finish
 
+  # End program successfully
   end_program:
     movq $0, %rax
 
+  # Complete program
   finish:
     leave
     ret
@@ -110,7 +113,7 @@ main:
 output_fmt: 
   .asciz "%ld\n"
 scanf_fmt: 
-  .asciz "%ld %c %ld"  # TODO: modify as needed
+  .asciz "%ld %c %ld"
 div_by_zero_msg:
   .asciz "Cannot divide by zero\n"
 unknown_op_msg:
